@@ -23,7 +23,8 @@ def generate_synthetic_data(N, M, L_0, b):
             upper_bound = phi[j] + (1 - phi[j]) * (1 - b)
             phi_prime[i, j] = np.random.uniform(lower_bound, upper_bound)
         
-        print(f"phi_prime[i]: {phi_prime[i]}")
+        # print(f"phi_prime[i]: {phi_prime[i]}")
+
         # 降順ソートでランキング作成
         ranked_indices = np.argsort(-phi_prime[i, :])
         # ranking_length = int(np.random.randint(
@@ -35,7 +36,7 @@ def generate_synthetic_data(N, M, L_0, b):
         for k in range(min(ranking_length, N)):
             R[i, ranked_indices[k]] = k + 1
         
-    print(f"R: {R}")
+    # print(f"R: {R}")
     
 
     return phi, R_0, phi_prime, R
