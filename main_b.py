@@ -103,9 +103,9 @@ if __name__ == '__main__':
 
                 end_time = time.time()
                 elapsed_time = end_time - start_time
-                print(f"[R_0: {R_0}]")
-                print(f"[R_hat: {R_hat}]")
-                print(f"[R_mvr: {R_mvr}]")
+                # print(f"[R_0: {R_0}]")
+                # print(f"[R_hat: {R_hat}]")
+                # print(f"[R_mvr: {R_mvr}]")
                 print(f"    [CG_D: {CG_D:.4f}, MVR_D: {MVR_D:.4f}, time: {elapsed_time:.2f}s]")
 
                 # （縦持ち形式で）結果を追加
