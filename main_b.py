@@ -23,16 +23,23 @@ def generate_synthetic_data(N, M, L_0, b):
             upper_bound = phi[j] + (1 - phi[j]) * (1 - b)
             phi_prime[i, j] = np.random.uniform(lower_bound, upper_bound)
         
+        print(f"phi_prime[i]: {phi_prime[i]}")
         # 降順ソートでランキング作成
         ranked_indices = np.argsort(-phi_prime[i, :])
-        ranking_length = int(np.random.randint(
-            int(L_0 - 0.2 * L_0), 
-            int(L_0 + 0.2 * L_0) + 1
-        ))
+        # ranking_length = int(np.random.randint(
+        #     int(L_0 - 0.2 * L_0), 
+        #     int(L_0 + 0.2 * L_0)
+        # ))
+        ranking_length = L_0
+
+        print(f"ranked_indices: {ranked_indices}")
         
         for k in range(min(ranking_length, N)):
             R[i, ranked_indices[k]] = k + 1
+        
+        print("R",R)
     
+
     return phi, R_0, phi_prime, R
 
 def compute_competition_matrix(R, N, M):
@@ -54,13 +61,13 @@ if __name__ == '__main__':
     
     # --------------------------
     # ここを変える
-    num_iterations = 10  
+    num_iterations = 1
     b_values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     # -------------------------
     
     # 固定パラメータ
-    N = 40
-    M = 400
+    N = 100
+    M = 1000
     L_0 = [25]  # ここを変える
 
     # b 値ごとにループ
@@ -125,8 +132,8 @@ if __name__ == '__main__':
         # CSV出力
         # pivoted_cg.to_csv(f"CG_D_wide_format_L_0_{l_0}.csv", float_format="%.4f")
         # print(f"\n結果を 'CG_D_wide_format_L_0_{l_0}.csv' に保存しました。")
-        pivoted_cg.to_csv(f"CG_D_L_0_{l_0}_N=40.csv", float_format="%.4f")
-        print(f"\n結果を 'CG_D_L_0_{l_0}_N=40.csv' に保存しました。")
+        pivoted_cg.to_csv(f"CG_D_L_0_{l_0}.csv", float_format="%.4f")
+        print(f"\n結果を 'CG_D_L_0_{l_0}.csv' に保存しました。")
 
         # MVR_D も同様に処理
         pivoted_mvr = results_df.pivot(
@@ -137,5 +144,5 @@ if __name__ == '__main__':
         # pivoted_mvr.to_csv(f"MVR_D_wide_format_L_0_{l_0}.csv", float_format="%.4f")
         # print(f"結果を 'MVR_D_wide_format_L_0_{l_0}.csv' に保存しました。")
 
-        pivoted_mvr.to_csv(f"MVR_D_L_0_{l_0}_N=40.csv", float_format="%.4f")
-        print(f"\n結果を 'MVR_D_L_0_{l_0}_N=40.csv' に保存しました。")
+        pivoted_mvr.to_csv(f"MVR_D_L_0_{l_0}.csv", float_format="%.4f")
+        print(f"\n結果を 'MVR_D_L_0_{l_0}.csv' に保存しました。")
