@@ -175,7 +175,10 @@ def generate_final_ranking_vector(X):
 # ケンドールタウ距離を計算する関数
 # 入力: R_mvr (推定されたランキング), R_0 (真のランキング)
 # 出力: ケンドールタウ距離D
-def calculate_kendall_tau_distance(R_mvr, R_0):
+def calculate_kendall_tau_distance(R_0, R_mvr):
+    if len(R_0) != len(R_mvr):
+        raise ValueError("The input rankings must have the same length.")
+
     N = len(R_mvr)
     D = 0
     for i in range(N):
