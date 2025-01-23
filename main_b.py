@@ -123,8 +123,10 @@ if __name__ == '__main__':
         print(pivoted_cg)
 
         # CSV出力
-        pivoted_cg.to_csv(f"CG_D_wide_format_L_0_{l_0}.csv", float_format="%.4f")
-        print(f"\n結果を 'CG_D_wide_format_L_0_{l_0}.csv' に保存しました。")
+        # pivoted_cg.to_csv(f"CG_D_wide_format_L_0_{l_0}.csv", float_format="%.4f")
+        # print(f"\n結果を 'CG_D_wide_format_L_0_{l_0}.csv' に保存しました。")
+        pivoted_cg.to_csv(f"CG_D_L_0_{l_0}_N=30.csv", float_format="%.4f")
+        print(f"\n結果を 'CG_D_L_0_{l_0}_N=30.csv' に保存しました。")
 
         # MVR_D も同様に処理
         pivoted_mvr = results_df.pivot(
@@ -132,5 +134,8 @@ if __name__ == '__main__':
             columns="b_value",
             values="MVR_D"
         )
-        pivoted_mvr.to_csv(f"MVR_D_wide_format_L_0_{l_0}.csv", float_format="%.4f")
-        print(f"結果を 'MVR_D_wide_format_L_0_{l_0}.csv' に保存しました。")
+        # pivoted_mvr.to_csv(f"MVR_D_wide_format_L_0_{l_0}.csv", float_format="%.4f")
+        # print(f"結果を 'MVR_D_wide_format_L_0_{l_0}.csv' に保存しました。")
+
+        pivoted_mvr.to_csv(f"MVR_D_L_0_{l_0}_N=30.csv", float_format="%.4f")
+        print(f"\n結果を 'MVR_D_L_0_{l_0}_N=30.csv' に保存しました。")
