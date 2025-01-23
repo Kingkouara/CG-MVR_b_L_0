@@ -49,7 +49,9 @@ def compute_competition_matrix(R, N, M):
         for s in range(N):
             for t in range(N):
                 if R[i, s] > 0 and R[i, t] > 0:
-                    P_i[s, t] = 1 if R[i, s] <= R[i, t] else 0
+                    P_i[s, t] = 1 if R[i, s] < R[i, t] else 0
+
+        print(f"P_{i}: {P_i}")
         A += P_i
     return A
 
@@ -60,14 +62,14 @@ if __name__ == '__main__':
     
     # --------------------------
     # ここを変える
-    num_iterations = 10
+    num_iterations = 1
     b_values = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.91,0.92,0.93,0.94,0.95,0.96,0.97,0.98,0.99]
     # b_values = [0.5]
     # -------------------------
     
     # 固定パラメータ
-    N = 100
-    M = 1000
+    N = 50
+    M = 500
     L_0 = [45]  # ここを変える
 
     # b 値ごとにループ
@@ -152,18 +154,18 @@ if __name__ == '__main__':
 
         # phi_df = pd.DataFrame(phi, columns=["True Ability"])
         # R_0_df = pd.DataFrame(R_0, columns=["True Rank"])
-        # phi_prime_df = pd.DataFrame(phi_prime, columns=[f"Candidate_{j+1}" for j in range(N)])
-        # R_df = pd.DataFrame(R, columns=[f"Candidate_{j+1}" for j in range(N)])
+        phi_prime_df = pd.DataFrame(phi_prime, columns=[f"Candidate_{j+1}" for j in range(N)])
+        R_df = pd.DataFrame(R, columns=[f"Candidate_{j+1}" for j in range(N)])
         # A_df = pd.DataFrame(A, columns=[f"Candidate_{j+1}" for j in range(N)])
-        # g_df = pd.DataFrame(g, columns=["g_j"])
-        # R_hat_df = pd.DataFrame(R_hat, columns=["Final Rank"])
-        # R_mvr_df = pd.DataFrame(R_mvr, columns=["Final Rank"])
+        g_df = pd.DataFrame(g, columns=["g_j"])
+        R_hat_df = pd.DataFrame(R_hat, columns=["Final Rank"])
+        R_mvr_df = pd.DataFrame(R_mvr, columns=["Final Rank"])
 
         
         # phi_df.to_csv("true_ability.csv", index=False)#真の能力値(N×1)
         # R_0_df.to_csv("true_rank.csv", index=False)#真のランクリスト(N×1)
-        # phi_prime_df.to_csv("displayed_ability.csv", index=False)#b_iから見たa_iの能力値(M×N)
-        # R_df.to_csv("rankings.csv", index=False)#ランキング行列(M×N)
+        phi_prime_df.to_csv("displayed_ability.csv", index=False)#b_iから見たa_iの能力値(M×N)
+        R_df.to_csv("rankings.csv", index=False)#ランキング行列(M×N)
         # A_df.to_csv("competition_matrix.csv", index=False)#競争行列(N×N)
-        # R_hat_df.to_csv("CG_final_rankings.csv", index=False)#最終的なランキング集約ベクトル
-        # R_mvr_df.to_csv("MVR_final_rankings.csv", index=False)#最終的なランキング集約ベクトル
+        R_hat_df.to_csv("CG_final_rankings.csv", index=False)#最終的なランキング集約ベクトル
+        R_mvr_df.to_csv("MVR_final_rankings.csv", index=False)#最終的なランキング集約ベクトル

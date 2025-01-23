@@ -39,7 +39,7 @@ def generate_competition_matrix(N, M, L_0, b):
         for s in range(N):
             for t in range(N):
                 if R[i, s] > 0 and R[i, t] > 0:
-                    P_i[s, t] = 1 if R[i, s] <= R[i, t] else 0
+                    P_i[s, t] = 1 if R[i, s] < R[i, t] else 0
         A += P_i
 
     return A, phi, R_0, R
