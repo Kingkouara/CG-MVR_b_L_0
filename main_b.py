@@ -60,15 +60,15 @@ if __name__ == '__main__':
     
     # --------------------------
     # ここを変える
-    num_iterations = 1
-    b_values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    num_iterations = 10
+    b_values = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.91,0.92,0.93,0.94,0.95,0.96,0.97,0.98,0.99]
     # b_values = [0.5]
     # -------------------------
     
     # 固定パラメータ
     N = 50
     M = 500
-    L_0 = [25]  # ここを変える
+    L_0 = [50]  # ここを変える
 
     # b 値ごとにループ
     for l_0 in L_0:
@@ -99,10 +99,13 @@ if __name__ == '__main__':
                 # MVR法
                 final_solution = MVR_method.iterative_constraint_relaxation(A)
                 g_mvr, R_mvr = MVR_method.generate_final_ranking_vector(final_solution)
-                MVR_D = MVR_method.calculate_kendall_tau_distance(R_0 - 1, R_mvr - 1)
+                MVR_D = MVR_method.calculate_kendall_tau_distance(R_0, R_mvr)
 
                 end_time = time.time()
                 elapsed_time = end_time - start_time
+                print(f"[R_0: {R_0}]")
+                print(f"[R_hat: {R_hat}]")
+                print(f"[R_mvr: {R_mvr}]")
                 print(f"    [CG_D: {CG_D:.4f}, MVR_D: {MVR_D:.4f}, time: {elapsed_time:.2f}s]")
 
                 # （縦持ち形式で）結果を追加
@@ -147,16 +150,20 @@ if __name__ == '__main__':
         pivoted_mvr.to_csv(f"MVR_D_L_0_{l_0}.csv", float_format="%.4f")
         print(f"\n結果を 'MVR_D_L_0_{l_0}.csv' に保存しました。")
 
-        phi_df = pd.DataFrame(phi, columns=["True Ability"])
-        R_0_df = pd.DataFrame(R_0, columns=["True Rank"])
-        phi_prime_df = pd.DataFrame(phi_prime, columns=[f"Candidate_{j+1}" for j in range(N)])
-        R_df = pd.DataFrame(R, columns=[f"Candidate_{j+1}" for j in range(N)])
-        A_df = pd.DataFrame(A, columns=[f"Candidate_{j+1}" for j in range(N)])
-        g_df = pd.DataFrame(g, columns=["g_j"])
-        R_hat_df = pd.DataFrame(R_hat, columns=["Final Rank"])
+        # phi_df = pd.DataFrame(phi, columns=["True Ability"])
+        # R_0_df = pd.DataFrame(R_0, columns=["True Rank"])
+        # phi_prime_df = pd.DataFrame(phi_prime, columns=[f"Candidate_{j+1}" for j in range(N)])
+        # R_df = pd.DataFrame(R, columns=[f"Candidate_{j+1}" for j in range(N)])
+        # A_df = pd.DataFrame(A, columns=[f"Candidate_{j+1}" for j in range(N)])
+        # g_df = pd.DataFrame(g, columns=["g_j"])
+        # R_hat_df = pd.DataFrame(R_hat, columns=["Final Rank"])
+        # R_mvr_df = pd.DataFrame(R_mvr, columns=["Final Rank"])
+
         
-        phi_df.to_csv("true_ability.csv", index=False)#真の能力値(N×1)
-        R_0_df.to_csv("true_rank.csv", index=False)#真のランクリスト(N×1)
-        phi_prime_df.to_csv("displayed_ability.csv", index=False)#b_iから見たa_iの能力値(M×N)
-        R_df.to_csv("rankings.csv", index=False)#ランキング行列(M×N)
-        A_df.to_csv("competition_matrix.csv", index=False)#競争行列(N×N)
+        # phi_df.to_csv("true_ability.csv", index=False)#真の能力値(N×1)
+        # R_0_df.to_csv("true_rank.csv", index=False)#真のランクリスト(N×1)
+        # phi_prime_df.to_csv("displayed_ability.csv", index=False)#b_iから見たa_iの能力値(M×N)
+        # R_df.to_csv("rankings.csv", index=False)#ランキング行列(M×N)
+        # A_df.to_csv("competition_matrix.csv", index=False)#競争行列(N×N)
+        # R_hat_df.to_csv("CG_final_rankings.csv", index=False)#最終的なランキング集約ベクトル
+        # R_mvr_df.to_csv("MVR_final_rankings.csv", index=False)#最終的なランキング集約ベクトル

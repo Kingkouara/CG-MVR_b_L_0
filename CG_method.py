@@ -106,41 +106,41 @@ for b in b_values:
     # print(f"b: {b}, g{g}, R{R_hat}")
 
 
-# 結果を保存または表示
-phi_df = pd.DataFrame(phi, columns=["True Ability"])
-R_0_df = pd.DataFrame(R_0, columns=["True Rank"])
-phi_prime_df = pd.DataFrame(phi_prime, columns=[f"Candidate_{j+1}" for j in range(N)])
-R_df = pd.DataFrame(R, columns=[f"Candidate_{j+1}" for j in range(N)])
-A_df = pd.DataFrame(A, columns=[f"Candidate_{j+1}" for j in range(N)])
-g_df = pd.DataFrame(g, columns=["g_j"])
-R_hat_df = pd.DataFrame(R_hat, columns=["Final Rank"])
-result_df = pd.DataFrame({"b": b_values, "D": D_values})
+# # 結果を保存または表示
+# phi_df = pd.DataFrame(phi, columns=["True Ability"])
+# R_0_df = pd.DataFrame(R_0, columns=["True Rank"])
+# phi_prime_df = pd.DataFrame(phi_prime, columns=[f"Candidate_{j+1}" for j in range(N)])
+# R_df = pd.DataFrame(R, columns=[f"Candidate_{j+1}" for j in range(N)])
+# A_df = pd.DataFrame(A, columns=[f"Candidate_{j+1}" for j in range(N)])
+# g_df = pd.DataFrame(g, columns=["g_j"])
+# R_hat_df = pd.DataFrame(R_hat, columns=["Final Rank"])
+# result_df = pd.DataFrame({"b": b_values, "D": D_values})
 
 
 
-# ファイルに保存
-phi_df.to_csv("true_ability.csv", index=False)#真の能力値(N×1)
-R_0_df.to_csv("true_rank.csv", index=False)#真のランクリスト(N×1)
-phi_prime_df.to_csv("displayed_ability.csv", index=False)#b_iから見たa_iの能力値(M×N)
-R_df.to_csv("rankings.csv", index=False)#ランキング行列(M×N)
-A_df.to_csv("competition_matrix.csv", index=False)#競争行列(N×N)
-g_df.to_csv("g_values.csv", index=False)#(M×1)
-R_hat_df.to_csv("final_rankings.csv", index=False)#最終的なランキング集約ベクトル
-result_df.to_csv("kendall_tau_distance_vs_b.csv", index=False)
+# # ファイルに保存
+# phi_df.to_csv("true_ability.csv", index=False)#真の能力値(N×1)
+# R_0_df.to_csv("true_rank.csv", index=False)#真のランクリスト(N×1)
+# phi_prime_df.to_csv("displayed_ability.csv", index=False)#b_iから見たa_iの能力値(M×N)
+# R_df.to_csv("rankings.csv", index=False)#ランキング行列(M×N)
+# A_df.to_csv("competition_matrix.csv", index=False)#競争行列(N×N)
+# g_df.to_csv("g_values.csv", index=False)#(M×1)
+# R_hat_df.to_csv("final_rankings.csv", index=False)#最終的なランキング集約ベクトル
+# result_df.to_csv("kendall_tau_distance_vs_b.csv", index=False)
 
-#グラフの描画
-plt.figure(figsize=(8, 6))
-plt.plot(result_df["b"], result_df["D"], marker='o', linestyle='-', label='Kendall Tau Distance')
-plt.title("Kendall Tau Distance vs b", fontsize=14)
-plt.xlabel("b (Accuracy Parameter)", fontsize=12)
-plt.ylabel("D (Kendall Tau Distance)", fontsize=12)
-plt.xticks(b_values)
-plt.legend()
-plt.grid()
-plt.savefig("kendall_tau_distance_vs_b.png")
-plt.show()
+# #グラフの描画
+# plt.figure(figsize=(8, 6))
+# plt.plot(result_df["b"], result_df["D"], marker='o', linestyle='-', label='Kendall Tau Distance')
+# plt.title("Kendall Tau Distance vs b", fontsize=14)
+# plt.xlabel("b (Accuracy Parameter)", fontsize=12)
+# plt.ylabel("D (Kendall Tau Distance)", fontsize=12)
+# plt.xticks(b_values)
+# plt.legend()
+# plt.grid()
+# plt.savefig("kendall_tau_distance_vs_b.png")
+# plt.show()
 
 
-# 結果を出力
-print("Kendall Tau 距離とbの関係がCSVファイルに保存されました: kendall_tau_distance_vs_b.csv")
+# # 結果を出力
+# print("Kendall Tau 距離とbの関係がCSVファイルに保存されました: kendall_tau_distance_vs_b.csv")
 
