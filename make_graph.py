@@ -20,7 +20,7 @@ for csv_file in csv_files:
     averages = data.iloc[:, 1:].mean(axis=0)
 
     # プロット
-    plt.plot(b_values, averages, marker='o', label=csv_file)
+    plt.plot(b_values, averages,marker='o', label=csv_file)
 
 # グラフの装飾
 plt.title('Average Values by b (Multiple Files)', fontsize=14)
