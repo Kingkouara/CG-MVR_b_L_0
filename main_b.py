@@ -50,7 +50,6 @@ def compute_competition_matrix(R, N, M):
             for t in range(N):
                 if R[i, s] > 0 and R[i, t] > 0:
                     P_i[s, t] = 1 if R[i, s] <= R[i, t] else 0
-        print(f"P_i: {P_i}")
         A += P_i
     return A
 
