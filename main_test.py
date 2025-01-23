@@ -23,23 +23,18 @@ def generate_synthetic_data(N, M, L_0, b):
             upper_bound = phi[j] + (1 - phi[j]) * (1 - b)
             phi_prime[i, j] = np.random.uniform(lower_bound, upper_bound)
         
-        # print(f"phi_prime[i]: {phi_prime[i]}")
-
-        # 降順ソートでランキング作成
-        ranked_indices = np.argsort(-phi_prime[i, :])
-        # ranking_length = int(np.random.randint(
-        #     int(L_0 - 0.5 * L_0), 
-        #     int(L_0 + 0.5 * L_0)
-        # ))
-        ranking_length = L_0
+        # ランダムにL_0人を選ぶ
+        candidates = np.random.choice(N, size=L_0, replace=False)  # ランダムにL_0人を選ぶ
         
-        for k in range(min(ranking_length, N)):
-            R[i, ranked_indices[k]] = k + 1
+        # 選ばれた候補者集合でphi_primeを降順ソートしてランク付け
+        selected_phi_prime = phi_prime[i, candidates]  # 選ばれた候補者のphi_prime値
+        sorted_indices = np.argsort(-selected_phi_prime)  # 降順ソートのインデックス
         
-    # print(f"R: {R}")
+        for rank, idx in enumerate(sorted_indices):
+            R[i, candidates[idx]] = rank + 1  # 1から順位を付ける
     
-
     return phi, R_0, phi_prime, R
+
 
 def compute_competition_matrix(R, N, M):
     # 遷移行列P^iを計算し、競争行列Aを生成
@@ -63,14 +58,14 @@ if __name__ == '__main__':
     # --------------------------
     # ここを変える
     num_iterations = 1
-    # b_values = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
-    b_values = [0.5]
+    b_values = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+    # b_values = [0.5]
     # -------------------------
     
     # 固定パラメータ
-    N = 10
-    M = 5
-    L_0 = [6]  # ここを変える
+    N = 20
+    M = 200
+    L_0 = [10]  # ここを変える
 
     # b 値ごとにループ
     for l_0 in L_0:
@@ -120,8 +115,8 @@ if __name__ == '__main__':
 
         # DataFrameに変換
         results_df = pd.DataFrame(all_results)
-        print("\n▼ 縦持ち形式の DataFrame")
-        print(results_df.head(15))  # 確認用
+        # print("\n▼ 縦持ち形式の DataFrame")
+        # print(results_df.head(15))  # 確認用
 
         # ----
         # CG_D のみを横持ちにする
@@ -131,8 +126,8 @@ if __name__ == '__main__':
             values="CG_D"  # ← CG_Dのみ
         )
 
-        print("\n▼ CG_D を横持ちにしたピボットテーブル")
-        print(pivoted_cg)
+        # print("\n▼ CG_D を横持ちにしたピボットテーブル")
+        # print(pivoted_cg)
 
         # CSV出力
         # pivoted_cg.to_csv(f"CG_D_wide_format_L_0_{l_0}.csv", float_format="%.4f")

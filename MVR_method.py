@@ -57,6 +57,7 @@ def calculate_C(A):
             if i != j:
                 C[i, j] = np.sum(A[i, :] < A[j, :]) + np.sum(A[:, i] > A[:, j])
 
+    
     return C
 
 # BILPを定式化してLPで緩和する関数
