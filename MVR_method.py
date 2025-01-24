@@ -2,37 +2,41 @@ import numpy as np
 import scipy.optimize as opt
 import pandas as pd
 import matplotlib.pyplot as plt
+from scipy.optimize import linprog 
 
-# 合成データを生成する関数
-# 入力: N (候補者数), M (投票者数), L_0 (ランキングの平均長さ), b (ノイズパラメータ)
-# 出力: 競争行列A, 候補者の真の能力値phi, 候補者の真の順位R_0, 投票者のランキング行列R
-def generate_competition_matrix(N, M, L_0, b):
-    # 候補者の真の能力
+def generate_synthetic_data(N, M, L_0, b):
     phi = np.random.uniform(0, 1, N)
-    
     sorted_phi = sorted(phi, reverse=True)
-
     rank_dict = {value: rank for rank, value in enumerate(sorted_phi, start=1)}
-
+    
     # 真の順位リストR_0を生成
     R_0 = np.array([rank_dict[x] for x in phi])
-
-    # 投票者のランキング行列を生成
+    
+    # 投票者b_iから見る候補者a_jの能力値Φ'_ijを生成
+    phi_prime = np.zeros((M, N))
     R = np.zeros((M, N), dtype=int)
+    
     for i in range(M):
-        phi_prime = np.zeros(N)
         for j in range(N):
             lower_bound = phi[j] - phi[j] * (1 - b)
             upper_bound = phi[j] + (1 - phi[j]) * (1 - b)
-            phi_prime[j] = np.random.uniform(lower_bound, upper_bound)
+            phi_prime[i, j] = np.random.uniform(lower_bound, upper_bound)
+        
+        # ランダムにL_0人を選ぶ
+        candidates = np.random.choice(N, size=L_0, replace=False)  # ランダムにL_0人を選ぶ
+        
+        # 選ばれた候補者集合でphi_primeを降順ソートしてランク付け
+        selected_phi_prime = phi_prime[i, candidates]  # 選ばれた候補者のphi_prime値
+        sorted_indices = np.argsort(-selected_phi_prime)  # 降順ソートのインデックス
+        
+        for rank, idx in enumerate(sorted_indices):
+            R[i, candidates[idx]] = rank + 1  # 1から順位を付ける
+    
+    return phi, R_0, phi_prime, R
 
-        # 投票者b_iのランキングを生成
-        ranked_indices = np.argsort(-phi_prime)
-        ranking_length = np.random.randint(L_0 - 0.2*L_0, L_0 + 0.2*L_0)
-        for k in range(ranking_length):
-            R[i, ranked_indices[k]] = k + 1
 
-    # 遷移行列を作成し競争行列Aを計算(入力データ)
+def compute_competition_matrix(R, N, M):
+    # 遷移行列P^iを計算し、競争行列Aを生成
     A = np.zeros((N, N), dtype=int)
     for i in range(M):
         P_i = np.zeros((N, N), dtype=int)
@@ -40,10 +44,10 @@ def generate_competition_matrix(N, M, L_0, b):
             for t in range(N):
                 if R[i, s] > 0 and R[i, t] > 0:
                     P_i[s, t] = 1 if R[i, s] < R[i, t] else 0
-        A += P_i
 
-    return A, phi, R_0, R
-#A(N×N)生成終了
+        # print(f"P_{i}: {P_i}")
+        A += P_i
+    return A
 
 
 # ヒルサイド違反の数を表す行列Cを作成する関数
@@ -51,13 +55,16 @@ def generate_competition_matrix(N, M, L_0, b):
 # 出力: ヒルサイド違反の数を表す行列C
 def calculate_C(A):
     n = A.shape[0]
+    # sum_C = 0
     C = np.zeros((n, n))
     for i in range(n):
         for j in range(n):
             if i != j:
                 C[i, j] = np.sum(A[i, :] < A[j, :]) + np.sum(A[:, i] > A[:, j])
 
-    
+    # sum_C = np.sum(C)
+    # print("ヒルサイド違反行列Cの合計値:",sum_C)
+
     return C
 
 # BILPを定式化してLPで緩和する関数
@@ -86,7 +93,7 @@ def solve_MVR_LP(C):
     bounds = [(0, 1) for _ in range(num_variables)]
 
     # 初期LPを解く
-    result = opt.linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')  # 定式化を解く関数
+    result = opt.linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs-ipm')  # 定式化を解く関数
     if result.success:
         x = result.x.reshape((n, n))
         return x, A_eq, b_eq
@@ -157,6 +164,7 @@ def iterative_constraint_relaxation(A):
 # 入力: X (最終的なランキング行列)
 # 出力: R_mvr (最終的なランキングベクトル)
 def generate_final_ranking_vector(X):
+    print("最終的なランキング行列X:",X)
     # ①: 行の合計値を計算
     row_sums = np.sum(X, axis=1)
 
@@ -197,11 +205,11 @@ if __name__ == "__main__":
     # b_values = [0.01,0.1, 0.5, 0.9,0.99]  # ノイズパラメータの候補
     D_values = []
 
-    # for b in b_values:
-    # 競争行列Aを生成
-    A, phi, R_0, R = generate_competition_matrix(N, M, L_0, b)
-    # print("競争行列A:")
-    # print(A)
+    # データ生成
+    phi, R_0, phi_prime, R = generate_synthetic_data(N, M, L_0, b)
+
+    # 競争行列Aの計算
+    A = compute_competition_matrix(R, N, M)
 
     final_solution = iterative_constraint_relaxation(A)
     # print("最終的なランキング行列X:")
