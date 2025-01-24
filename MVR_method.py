@@ -164,7 +164,7 @@ def iterative_constraint_relaxation(A):
 # 入力: X (最終的なランキング行列)
 # 出力: R_mvr (最終的なランキングベクトル)
 def generate_final_ranking_vector(X):
-    print("最終的なランキング行列X:",X)
+    # print("最終的なランキング行列X:",X)
     # ①: 行の合計値を計算
     row_sums = np.sum(X, axis=1)
 
