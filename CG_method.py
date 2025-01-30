@@ -50,7 +50,7 @@ def compute_competition_matrix(R, N, M):
     return A
 #入力データの正方行列A生成終了
 
-def calculate_rankings(A, N):
+def calculate_rankings(A):
     # 出次数、入次数、および比率g_jを計算
     d_out = np.sum(A, axis=1)
     d_in = np.sum(A, axis=0)
@@ -82,28 +82,29 @@ def calculate_kendall_tau_distance(R_0, R_hat):
 
 
 # パラメータの設定
-N = 10  # 候補者数
-M = 10  # 投票者数
-L_0 = 10  # 各投票者のランキングの基本長さ
+N = 50  # 候補者数
+M = 500  # 投票者数
+L_0 = 30  # 各投票者のランキングの基本長さ
 # b = 0  # 表示精度
 
-b_values = [0.5]  # ノイズパラメータの候補
-D_values = []
+# b_values = [0.91,0.92,0.93,0.94,0.95]  # ノイズパラメータの候補
+# D_values = []
 
-for b in b_values:
-    # データ生成
-    phi, R_0, phi_prime, R = generate_synthetic_data(N, M, L_0, b)
+# for b in b_values:
+#     # データ生成
+#     phi, R_0, phi_prime, R = generate_synthetic_data(N, M, L_0, b)
 
-    # 競争行列Aの計算
-    A = compute_competition_matrix(R, N, M)
+#     # 競争行列Aの計算
+#     A = compute_competition_matrix(R, N, M)
 
-    # 出次数、入次数、比率g_j、最終ランキングベクトルR_hatの計算
-    g, R_hat = calculate_rankings(A, N)
+#     # 出次数、入次数、比率g_j、最終ランキングベクトルR_hatの計算
+#     g, R_hat = calculate_rankings(A)
 
-    # Kendall Tau 距離の計算
-    D = calculate_kendall_tau_distance(R_0 - 1, R_hat - 1)
-    D_values.append(D)
-    # print(f"b: {b}, g{g}, R{R_hat}")
+#     # Kendall Tau 距離の計算
+#     D = calculate_kendall_tau_distance(R_0 - 1, R_hat - 1)
+#     D_values.append(D)
+#     # print(f"b: {b}, g{g}, R{R_hat}")
+#     # print(f"b: {b}, D: {D}")
 
 
 # # 結果を保存または表示
@@ -124,7 +125,7 @@ for b in b_values:
 # phi_prime_df.to_csv("displayed_ability.csv", index=False)#b_iから見たa_iの能力値(M×N)
 # R_df.to_csv("rankings.csv", index=False)#ランキング行列(M×N)
 # A_df.to_csv("competition_matrix.csv", index=False)#競争行列(N×N)
-# g_df.to_csv("g_values.csv", index=False)#(M×1)
+# g_df.to_csv("g_values.csv", index=False)#(N×1)
 # R_hat_df.to_csv("final_rankings.csv", index=False)#最終的なランキング集約ベクトル
 # result_df.to_csv("kendall_tau_distance_vs_b.csv", index=False)
 

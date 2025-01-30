@@ -60,11 +60,7 @@ def calculate_C(A):
     for i in range(n):
         for j in range(n):
             if i != j:
-                # C[i, j] = np.sum(A[i, :] < A[j, :]) + np.sum(A[:, i] > A[:, j])
-                C[i, j] = A[i, j] - A[j, i]
-
-    # sum_C = np.sum(C)
-    # print("ヒルサイド違反行列Cの合計値:",sum_C)
+                C[i, j] = np.sum(A[i, :] < A[j, :]) + np.sum(A[:, i] > A[:, j])
 
     return C
 
@@ -76,8 +72,8 @@ def solve_MVR_LP(C):
     num_variables = n * n
 
     # 目的関数: c_ij * x_ij の係数ベクトル
-    c = C.flatten()
-    c= -c
+    C_norm = C/np.max(C)  # 正規化
+    c = C_norm.flatten()
 
     # 制約: x_ij + x_ji = 1 (タイプ1: 反対称制約)
     A_eq = np.zeros((n * (n - 1) // 2, num_variables))  # 等式制約行列
@@ -92,12 +88,15 @@ def solve_MVR_LP(C):
    
 
     # 制約: 0 <= x_ij <= 1 (バイナリ制約の緩和)
+    # bounds = [(0, 1) for _ in range(num_variables)]
     bounds = [(0, 1) for _ in range(num_variables)]
 
     # 初期LPを解く
-    result = opt.linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs-ipm')  # 定式化を解く関数
+    result = linprog(c, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs-ipm')  # 定式化を解く関数
     if result.success:
         x = result.x.reshape((n, n))
+
+        print("初期LPの解が見つかりました。",x)
         return x, A_eq, b_eq
     else:
         raise ValueError("初期LPの解が見つかりませんでした。")
@@ -107,17 +106,15 @@ def solve_MVR_LP(C):
 # 出力: 最終的なランキング行列 x
 def iterative_constraint_relaxation(A):
     C = calculate_C(A)  # ヒルサイド違反行列を計算
-    c = C.flatten()
-    c = -c 
+    C_norm = C/np.max(C)  # 正規化
+    c = C_norm.flatten()
+
     n = C.shape[0]  # アイテム数
     x, A_eq, b_eq = solve_MVR_LP(C)  # 初期LPを解く
 
     # 制約: x_ij + x_jk + x_ki <= 2 (タイプ2: 伝播性制約、初期は緩和)
     A_ineq = []  # 不等式制約行列（動的に拡張）（A_eqのタイプ２ver）
     b_ineq = []  # 不等式制約の右辺ベクトル
-
-    if x is None or np.all(x == 0):  # 初期解がすべてゼロの場合の対策
-        raise ValueError("初期ランキング行列が不正です。解法を確認してください。")
 
     while True:
         violations = []  # 制約違反のリスト
@@ -130,13 +127,15 @@ def iterative_constraint_relaxation(A):
 
         # 違反がない場合は終了
         if not violations:
+            print("最終的なランキング行列X",x)
+            # print("制約2",A_ineq)
             break
 
         # 違反制約を追加
         for i, j, k in violations:
-            # print(f"違反制約: {violations}")
+            print(f"違反制約の数:{len(violations)}")
+            
             row = np.zeros(n * n)  # 新しい制約の係数行
-            # print(f"新しい制約の係数行: {row}")
             row[i * n + j] = 1
             row[j * n + k] = 1
             row[k * n + i] = 1
@@ -152,7 +151,7 @@ def iterative_constraint_relaxation(A):
         # 再実行
         bounds = [(0, 1) for _ in range(n*n)]
 
-        result = opt.linprog(c, A_ub=A_ineq_matrix, b_ub=b_ineq_vector, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
+        result = linprog(c, A_ub=A_ineq_matrix, b_ub=b_ineq_vector, A_eq=A_eq, b_eq=b_eq, bounds=bounds, method='highs')
         if result.success:
             x = result.x.reshape((n, n))
             if x is None or np.all(x == 0):  # xがすべてゼロの場合の対策
@@ -229,31 +228,39 @@ if __name__ == "__main__":
     # print("ケンドールタウ距離D:")
     # print(D)
 
-# メイン
-# if __name__ == "__main__":
-#     N = 10 # 候補者数
-#     M = 100  # 投票者数
-#     L_0 = 7  # ランキングの平均長さ
-#     b = 0.8  # ノイズパラメータ
-#     # b_values = [0.01,0.1, 0.5, 0.9,0.99]  # ノイズパラメータの候補
-#     D_values = []
+    
+# #結果を保存または表示
+# phi_df = pd.DataFrame(phi, columns=["True Ability"])
+# R_0_df = pd.DataFrame(R_0, columns=["True Rank"])
+# R_df = pd.DataFrame(R, columns=[f"Candidate_{j+1}" for j in range(N)])
+# A_df = pd.DataFrame(A, columns=[f"Candidate_{j+1}" for j in range(N)])
+# g_df = pd.DataFrame(g, columns=["g_j"])
+# R_hat_df = pd.DataFrame(R_mvr, columns=["Final Rank"])
+# result_df = pd.DataFrame({"b": b, "D": D_values})
 
-#     # データ生成
-#     phi, R_0, phi_prime, R = generate_synthetic_data(N, M, L_0, b)
 
-#     # 競争行列Aの計算
-#     A = compute_competition_matrix(R, N, M)
 
-#     final_solution = iterative_constraint_relaxation(A)
-#     # print("最終的なランキング行列X:")
-#     # print(final_solution)
+# # ファイルに保存
+# phi_df.to_csv("mvr_true_ability.csv", index=False)#真の能力値(N×1)
+# R_0_df.to_csv("mvr_true_rank.csv", index=False)#真のランクリスト(N×1)
+# R_df.to_csv("mvr_rankings.csv", index=False)#ランキング行列(M×N)
+# A_df.to_csv("mvr_competition_matrix.csv", index=False)#競争行列(N×N)
+# # g_df.to_csv("g_values.csv", index=False)#(M×1)
+# R_hat_df.to_csv("mvr_final_rankings.csv", index=False)#最終的なランキング集約ベクトル
+# result_df.to_csv("mvr_kendall_tau_distance_vs_b.csv", index=False)
 
-#     g, R_mvr = generate_final_ranking_vector(final_solution)
-#     # print("最終的なランキングベクトルR_mvr:")
-#     # print(R_mvr)
+    # # グラフの描画
+    # plt.figure(figsize=(8, 6))
+    # plt.plot(result_df["b"], result_df["D"], marker='o', linestyle='-', label='Kendall Tau Distance')
+    # plt.title("Kendall Tau Distance vs b", fontsize=14)
+    # plt.xlabel("b (Accuracy Parameter)", fontsize=12)
+    # plt.ylabel("D (Kendall Tau Distance)", fontsize=12)
+    # plt.xticks(b_values)
+    # plt.legend()
+    # plt.grid()
+    # plt.savefig("kendall_tau_distance_vs_b.png")
+    # plt.show()
 
-    # # ケンドールタウ距離を計算
-    # D = calculate_kendall_tau_distance(R_mvr, R_0)
-    # D_values.append(D)
-    # print("ケンドールタウ距離D:")
-    # print(D)
+
+# 結果を出力
+# print("Kendall Tau 距離とbの関係がCSVファイルに保存されました: kendall_tau_distance_vs_b.csv")
