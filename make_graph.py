@@ -4,7 +4,7 @@ import pandas as pd
 import glob
 
 # CSVファイルのパス
-csv_files = glob.glob("*45.csv")
+csv_files = glob.glob("*30.csv")
 
 plt.figure(figsize=(10, 6))
 
