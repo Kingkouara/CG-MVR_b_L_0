@@ -4,7 +4,7 @@ import pandas as pd
 import glob
 
 # CSVファイルのパス
-csv_files = glob.glob("*30.csv")
+csv_files = glob.glob("*25.csv")
 
 plt.figure(figsize=(10, 6))
 
@@ -14,9 +14,9 @@ for csv_file in csv_files:
     data = pd.read_csv(csv_file)
 
     # bの値を取得
-    b_values = data.columns[1:].astype(float)
+    b_values = data.columns[:1].astype(float)
 
-    # 各bの値ごとに平均を計算
+    # # 各bの値ごとに平均を計算
     averages = data.iloc[:, 1:].mean(axis=0)
 
     # プロット

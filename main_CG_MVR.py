@@ -51,7 +51,7 @@ def compute_competition_matrix(R, N, M):
 if __name__ == '__main__':
     total_start_time = time.time()
     
-    num_iterations = 100
+    num_iterations = 10
     b_values = [0.8, 0.85, 0.9, 0.91, 0.92, 0.93, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99]
    
     N = 50
