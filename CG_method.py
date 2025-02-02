@@ -68,15 +68,15 @@ def calculate_rankings(A):
 
     return g, np.array(ranks)
 
-def calculate_kendall_tau_distance(R_0, R_hat):
-    if len(R_0) != len(R_hat):
+def calculate_kendall_tau_distance(R_0, R_CG):
+    if len(R_0) != len(R_CG):
         raise ValueError("The input rankings must have the same length.")
     
     distance = 0
     n = len(R_0)
     for i in range(n):
         for j in range(i + 1, n):
-            if (R_0[i] < R_0[j] and R_hat[i] > R_hat[j]) or (R_0[i] > R_0[j] and R_hat[i] < R_hat[j]):
+            if (R_0[i] < R_0[j] and R_CG[i] > R_CG[j]) or (R_0[i] > R_0[j] and R_CG[i] < R_CG[j]):
                 distance += 1
     return distance
 
@@ -97,13 +97,13 @@ L_0 = 30  # 各投票者のランキングの基本長さ
 #     # 競争行列Aの計算
 #     A = compute_competition_matrix(R, N, M)
 
-#     # 出次数、入次数、比率g_j、最終ランキングベクトルR_hatの計算
-#     g, R_hat = calculate_rankings(A)
+#     # 出次数、入次数、比率g_j、最終ランキングベクトルR_CGの計算
+#     g, R_CG = calculate_rankings(A)
 
 #     # Kendall Tau 距離の計算
-#     D = calculate_kendall_tau_distance(R_0 - 1, R_hat - 1)
+#     D = calculate_kendall_tau_distance(R_0 - 1, R_CG - 1)
 #     D_values.append(D)
-#     # print(f"b: {b}, g{g}, R{R_hat}")
+#     # print(f"b: {b}, g{g}, R{R_CG}")
 #     # print(f"b: {b}, D: {D}")
 
 
@@ -114,7 +114,7 @@ L_0 = 30  # 各投票者のランキングの基本長さ
 # R_df = pd.DataFrame(R, columns=[f"Candidate_{j+1}" for j in range(N)])
 # A_df = pd.DataFrame(A, columns=[f"Candidate_{j+1}" for j in range(N)])
 # g_df = pd.DataFrame(g, columns=["g_j"])
-# R_hat_df = pd.DataFrame(R_hat, columns=["Final Rank"])
+# R_CG_df = pd.DataFrame(R_CG, columns=["Final Rank"])
 # result_df = pd.DataFrame({"b": b_values, "D": D_values})
 
 
@@ -126,7 +126,7 @@ L_0 = 30  # 各投票者のランキングの基本長さ
 # R_df.to_csv("rankings.csv", index=False)#ランキング行列(M×N)
 # A_df.to_csv("competition_matrix.csv", index=False)#競争行列(N×N)
 # g_df.to_csv("g_values.csv", index=False)#(N×1)
-# R_hat_df.to_csv("final_rankings.csv", index=False)#最終的なランキング集約ベクトル
+# R_CG_df.to_csv("final_rankings.csv", index=False)#最終的なランキング集約ベクトル
 # result_df.to_csv("kendall_tau_distance_vs_b.csv", index=False)
 
 # #グラフの描画

@@ -12,25 +12,29 @@ def generate_synthetic_data(N, M, L_0, b):
     
     # 真の順位リストR_0を生成
     R_0 = np.array([rank_dict[x] for x in phi])
-    # 投票者b_iから見る候補者a_jの能力値Φ'_ijを生成
+    # 評価指標x_kから見るロボットv_iの能力値Φ'_kiを生成
     phi_prime = np.zeros((M, N))
     R = np.zeros((M, N), dtype=int)
     
-    for i in range(M):
-        for j in range(N):
-            lower_bound = phi[j] - phi[j] * (1 - b)
-            upper_bound = phi[j] + (1 - phi[j]) * (1 - b)
-            phi_prime[i, j] = np.random.uniform(lower_bound, upper_bound)
+    for k in range(M):
+        for i in range(N):
+            lower_bound = phi[i] - phi[i] * (1 - b)
+            upper_bound = phi[i] + (1 - phi[i]) * (1 - b)
+            phi_prime[k, i] = np.random.uniform(lower_bound, upper_bound)
         
-        # ランダムにL_0人を選ぶ
-        candidates = np.random.choice(N, size=L_0, replace=False)  # ランダムにL_0人を選ぶ
+        #L_0=50台
+        candidates = np.random.choice(N, size=L_0, replace=False)  
         
-        # 選ばれた候補者集合でphi_primeを降順ソートしてランク付け
-        selected_phi_prime = phi_prime[i, candidates]  # 選ばれた候補者のphi_prime値
-        sorted_indices = np.argsort(-selected_phi_prime)  # 降順ソートのインデックス
+        # 選ばれたロボット集合でphi_primeを降順ソートしてランク付け
+
+        # 選ばれたロボットのphi_prime値
+        selected_phi_prime = phi_prime[k, candidates]  
+        # 降順ソートのインデックス
+        sorted_indices = np.argsort(-selected_phi_prime)  
         
+        # 1から順位を付ける
         for rank, idx in enumerate(sorted_indices):
-            R[i, candidates[idx]] = rank + 1  # 1から順位を付ける
+            R[i, candidates[idx]] = rank + 1  
     
     return phi, R_0, phi_prime, R
 

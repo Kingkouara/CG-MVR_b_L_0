@@ -63,7 +63,7 @@ def compute_markov_ranking(B):
     # 固有ベクトルを求める (ステディステート)
     eigvals, eigvecs = np.linalg.eig(P.T)
     steady_state = eigvecs[:, np.isclose(eigvals, 1)]
-    steady_state = steady_state[:, 0].real  # 実数部分のみ取得
+    steady_state = steady_state[:, 0].real # 実数部分のみ取得
     steady_state = steady_state / steady_state.sum()  # 正規化
 
     steady_state_tmp = steady_state.copy()
